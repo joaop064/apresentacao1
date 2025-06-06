@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Sustentabilidade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #2f2f2f;
+            animation: fadeIn 1.5s ease;
+        }
+
+
+        header {
+            background-color:hsl(149, 62%, 24%);
+            color: white;
+            padding: 10px 10px;
+            text-align: center;
+        }
+
+        header img {
+            max-height: 100px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        nav {
+        background-color: #444;
+        display: flex;
+        justify-content: flex-end;
+        padding: 15px 15px;
+        
+       }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            color: #000000;
+            margin-top: 40px;
+        }
+
+        p {
+            line-height: 1.8;
+        }
+
+        ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .imagem {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .imagem:hover {
+            transform: scale(1.03);
+        }
+
+        .botao-voltar {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 12px 24px;
+            background-color:hsl(149, 62%, 24%) ;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .botao-voltar:hover {
+            background-color:hsl(149, 52%, 29%);
+        }
+
+       
+      footer {
+        padding: 10px;
+        text-align: center;
+        background-color: #333;
+          color: white;
+          padding:10x 10px 10px;
+          margin-top: 30px;
+          border-top: 1px solid #555;
+       }
+  
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .seta-voltar-topo {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background-color: hsl(149, 50%, 49%);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(38, 214, 102, 0.3);
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.seta-voltar-topo:hover {
+    background-color: hsl(150, 80%, 44%);
+    cursor: pointer;
+}
+
+    </style>
+</head>
+<body>
+  <a href="cards.php" class="seta-voltar-topo" aria-label="Voltar para a página principal">← Voltar</a>
+
+    <header>
+        <h1>Sustentabilidade</h1>
+        <p>Construindo um futuro melhor para o planeta</p>
+    </header>
+    <nav>
+
+    </nav>
+
+    <div class="container">
+        <img class="imagem" src="https://img.freepik.com/vetores-gratis/ilustracao-com-salvar-a-mensagem-do-planeta_23-2148514659.jpg?t=st=1745336419~exp=1745340019~hmac=5bf0ba0f53a6144ea4ddc38dedecd27f477e9e3879c97fb5ffed617ee88dc977&w=826" alt="Natureza Sustentável">
+
+        <section>
+            <h2>O Que é Sustentabilidade?</h2>
+            <p>Sustentabilidade é a prática de viver e desenvolver atividades de forma a atender às necessidades do presente sem comprometer as gerações futuras. Envolve o equilíbrio entre o meio ambiente, a economia e a sociedade.</p>
+          </section>
+      
+          <section>
+            <h2>Por Que é Essencial?</h2>
+            <p>Viver de forma sustentável é essencial para garantir a qualidade de vida no planeta. Entre os principais objetivos estão:</p>
+            <ul>
+              <li>Preservar os recursos naturais.</li>
+              <li>Reduzir os impactos ambientais.</li>
+              <li>Promover justiça social e econômica.</li>
+              <li>Manter o equilíbrio dos ecossistemas.</li>
+            </ul>
+          </section>
+      
+          <section>
+            <h2>Como Praticar a Sustentabilidade no Dia a Dia</h2>
+            <ul>
+              <li>Reduzir o uso de plástico e optar por reutilizáveis.</li>
+              <li>Consumir de forma consciente e evitar desperdícios.</li>
+              <li>Economizar água e energia.</li>
+              <li>Valorizar produtos locais e orgânicos.</li>
+              <li>Separar o lixo e reciclar sempre que possível.</li>
+            </ul>
+          </section>
+      
+          <section>
+            <h2>Benefícios para o Meio Ambiente</h2>
+            <ul>
+              <li>Menos poluição e menos resíduos no planeta.</li>
+              <li>Preservação da biodiversidade.</li>
+              <li>Redução das emissões de gases do efeito estufa.</li>
+              <li>Melhor uso dos recursos naturais.</li>
+            </ul>
+          </section>
+      
+          <section>
+            <h2>Impactos Positivos na Sociedade</h2>
+            <ul>
+              <li>Melhoria na saúde pública e na qualidade de vida.</li>
+              <li>Mais empregos em setores sustentáveis.</li>
+              <li>Fortalecimento da economia local.</li>
+              <li>Redução das desigualdades sociais.</li>
+            </ul>
+          </section>
+      
+          <section>
+            <h2>O Papel de Todos</h2>
+            <p>A sustentabilidade é responsabilidade de todos: governos, empresas e cidadãos. Pequenas atitudes cotidianas têm grande impacto quando feitas coletivamente.</p>
+          </section>
+      
+          <section>
+            <h2>Conclusão: Um Futuro Sustentável é Possível</h2>
+            <p>Construir um mundo mais equilibrado e justo começa com escolhas conscientes. Viver de forma sustentável é um ato de respeito com a natureza, com os outros e com as próximas gerações.</p>
+          </section>
+      
+
+        
+    </div>
+
+    <footer>
+        Projeto Eco Scaling • Todos os direitos reservados © 2025
+    </footer>
+
+</body>
+</html>
