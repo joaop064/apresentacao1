@@ -3,17 +3,11 @@
 include('conexao.php');
 session_start();
 
-// Botão "Voltar"
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (isset($_POST['retornar']) && $_POST['retornar'] === 'retornar') {
-        header("Location: inicio.php");
-        exit;
-    }
-}
+
 
 $mensagem = '';
 
-// Botão "Entrar"
+
 if (isset($_POST['email']) && isset($_POST['senha'])) {
     if (strlen($_POST['email']) == 0) {
         $mensagem = "Preencha seu e-mail";
@@ -32,7 +26,7 @@ if (isset($_POST['email']) && isset($_POST['senha'])) {
             if (password_verify($senha, $aluno['senha'])) {
                 $_SESSION['id'] = $aluno['id'];
                 $_SESSION['nome'] = $aluno['nome'];
-                header("Location: cards.php");
+                header("Location: inicio.php");
                 exit;
             } else {
                 $mensagem = "Senha incorreta";
@@ -146,9 +140,7 @@ if (isset($_POST['email']) && isset($_POST['senha'])) {
     </form>
 
    
-    <form method="POST" action="login.php">
-      <button type="submit" name="retornar" value="retornar">Voltar</button>
-    </form>
+    
 
     <?php if ($mensagem): ?>
       <div class="mensagem"><?php echo $mensagem; ?></div>
