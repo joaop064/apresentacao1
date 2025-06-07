@@ -6,7 +6,7 @@ $comprouJogos = false;
 $nomeUsuario = '';
 
 if (isset($_SESSION['id'])) {
-    $id = $_SESSION['id']; 
+    $id = $_SESSION['id'];
 
     $sql = "SELECT nome, comprou_jogos FROM aluno WHERE id = ?";
     $stmt = $conexao->prepare($sql);
@@ -21,7 +21,6 @@ if (isset($_SESSION['id'])) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -200,18 +199,28 @@ if (isset($_SESSION['id'])) {
     .btn-comprar {
       display: inline-block;
       margin: 20px auto;
-      padding: 10px 20px;
+      padding: 12px 24px;
       background-color: #4CAF50;
       color: white;
       text-decoration: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-weight: bold;
       transition: background-color 0.3s ease;
       text-align: center;
+      font-size: 16px;
     }
 
     .btn-comprar:hover {
       background-color: #388e3c;
+    }
+
+    .btn-comprar span.preco {
+      margin-left: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 8px;
+      border-radius: 8px;
     }
 
     @media (max-width: 600px) {
@@ -222,15 +231,14 @@ if (isset($_SESSION['id'])) {
         font-size: 1.5em;
       }
     }
-    html {
-  scroll-behavior: smooth;
-}
 
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
-
 <body>
-  <!-- MENU RESPONSIVO -->
+
   <nav>
     <a class="logo">EcoScaling</a>
     <div class="nav-menu-right">
@@ -238,8 +246,9 @@ if (isset($_SESSION['id'])) {
         <li><a href="inicio.php">Início</a></li>
         <li><a href="cards.php">Cards</a></li>
         <li><a href="sobre.php">Sobre</a></li>
-        <li><a href="#meus-jogos">Jogos</a></li>
-
+       <?php if ($comprouJogos): ?>
+       <li><a href="#meus-jogos">Jogos</a></li>
+       <?php endif; ?>
       </ul>
       <div class="nav-right">
         <?php if (isset($_SESSION['id'])): ?>
@@ -258,7 +267,6 @@ if (isset($_SESSION['id'])) {
       <div class="line3"></div>
     </div>
   </nav>
-
 
   <header>
     <h1>Jogos Educativos sobre Sustentabilidade</h1>
@@ -302,21 +310,24 @@ if (isset($_SESSION['id'])) {
 
   <?php if (!$comprouJogos): ?>
   <div style="text-align:center;">
-    <a href="formulario-compra.php" class="btn-comprar">Comprar</a>
+    <a href="formulario-compra.php" class="btn-comprar">
+      Comprar acesso <span class="preco">R$ 20,00</span>
+    </a>
   </div>
-<?php endif; ?>
+  <?php endif; ?>
 
-
-  <footer id="contato">
-    <p>Desenvolvido com ❤️ para a educação ambiental.</p>
-  </footer>
- <?php if ($comprouJogos): ?>
+  <?php if ($comprouJogos): ?>
   <section class="games-links" id="meus-jogos" style="text-align:center;">
     <h2>🎮 Acesse seus jogos!</h2>
     <a href="quiz.php" class="btn-comprar">Quiz</a>
     <a href="memoria.php" class="btn-comprar">Jogo da Memória</a>
   </section>
-<?php endif; ?>
+  <?php endif; ?>
+
+  <footer id="contato">
+    <p>Desenvolvido com ❤️ para a educação ambiental.</p>
+  </footer>
+
   <script>
     const mobileMenu = document.querySelector('.mobile-menu');
     const navList = document.querySelector('.nav-list');
