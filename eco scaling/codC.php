@@ -1,4 +1,6 @@
 <?php
+session_start(); // importante para usar $_SESSION
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     include('conexao.php');
 
@@ -11,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Por favor, selecione uma escola.");
     }
 
+    // Verificar se o e-mail já está cadastrado
     $check = $conexao->prepare("SELECT id FROM aluno WHERE email = ?");
     $check->bind_param("s", $email);
     $check->execute();
@@ -21,12 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-  
+    // Inserir o novo aluno
     $stmt = $conexao->prepare("INSERT INTO aluno (nome, email, senha, escola_id) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("sssi", $nome, $email, $senha, $escola_id);
     $stmt->execute();
 
-    header("Location: login.php");
+    // Obter o ID do novo usuário
+    $novo_id = $conexao->insert_id;
+
+    // Armazenar os dados na sessão para login automático
+    $_SESSION['id'] = $novo_id;
+    $_SESSION['nome'] = $nome;
+
+    // Redirecionar para a página inicial
+    header("Location: inicio.php");
     exit();
 }
 ?>
