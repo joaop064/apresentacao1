@@ -35,10 +35,14 @@ if ($result->num_rows == 1) {
         $nome_escola = "Escola não encontrada";
     }
 
-} else {
-    echo "Usuário não encontrado.";
+}   else {
+    session_unset(); 
+    session_destroy(); 
+    header("Location: inicio.php");
     exit();
 }
+
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
