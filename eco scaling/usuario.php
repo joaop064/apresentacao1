@@ -22,10 +22,8 @@ $result = $conexao->query($sql);
 if ($result->num_rows == 1) {
     $usuario = $result->fetch_assoc();
 
-    // Verifica se o aluno comprou os jogos
     $comprouJogos = $usuario['comprou_jogos'] == 1;
 
-    // Buscar nome da escola
     $escola_id = $usuario['escola_id'];
     $sql_escola = "SELECT nome FROM escola WHERE id = '$escola_id'";
     $result_escola = $conexao->query($sql_escola);
@@ -48,41 +46,45 @@ if ($result->num_rows == 1) {
   <meta charset="UTF-8">
   <title>Página do Usuário</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #e9f7ec;
       margin: 0;
       padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background-image: url('https://static.vecteezy.com/ti/vetor-gratis/p1/14703696-modelo-de-negocios-verde-e-plano-de-fundo-para-o-conceito-de-sustentabilidade-com-icones-planos-ambientais-vetor.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed; /* Faz o fundo se manter fixo ao rolar */
     }
 
     .user-container {
       max-width: 800px;
-      margin: 50px auto;
-      background-color: #ffffff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin: 60px auto 30px auto;
+      padding: 40px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .user-header {
       text-align: center;
-      color: #2e7d32;
+      color: #1b5e20;
       font-size: 2em;
-      margin-bottom: 20px;
+      font-weight: 600;
+      margin-bottom: 30px;
     }
 
     .user-info {
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      margin-top: 30px;
-    }
-
-    .info-label {
-      font-weight: bold;
-      color: #388e3c;
-      width: 100px;
-      flex-shrink: 0;
+      gap: 20px;
     }
 
     .info-row {
@@ -90,12 +92,25 @@ if ($result->num_rows == 1) {
       align-items: center;
     }
 
+    .info-label {
+      font-weight: 600;
+      color: #2e7d32;
+      width: 120px;
+      flex-shrink: 0;
+    }
+
     .info-content {
-      background-color: #f1f8f4;
+      background: rgba(240, 255, 240, 0.6);
+      border: 1px solid #c8e6c9;
       padding: 10px 15px;
-      border-radius: 5px;
-      color: #333;
+      border-radius: 10px;
+      color: #2e2e2e;
       flex-grow: 1;
+    }
+
+    .button-group {
+      text-align: right;
+      margin-top: 30px;
     }
 
     .edit-button {
@@ -105,24 +120,16 @@ if ($result->num_rows == 1) {
       padding: 10px 20px;
       text-align: center;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       text-decoration: none;
       font-size: 16px;
-      margin-top: 20px;
-      transition: background-color 0.3s;
-    }
-
-    .edit-button:not(:last-child) {
-      margin-right: 10px;
+      margin-left: 10px;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
     .edit-button:hover {
       background-color: #388e3c;
-    }
-
-    .button-group {
-      text-align: right;
-      margin-top: 20px;
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -132,7 +139,12 @@ if ($result->num_rows == 1) {
   <div class="user-header">
     Bem-vindo, <?= htmlspecialchars($usuario['nome']); ?>!
   </div>
-
+  
+   <div class="info-row">
+    <div class="info-label">Matrícula:</div>
+    <div class="info-content"><?= htmlspecialchars($usuario['matricula']); ?></div>
+  </div>
+  <br>
   <div class="user-info">
     <div class="info-row">
       <div class="info-label">Email:</div>
