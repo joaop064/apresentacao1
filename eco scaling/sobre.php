@@ -186,6 +186,9 @@
     a {
       color: white;
     }
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body>
