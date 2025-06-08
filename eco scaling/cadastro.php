@@ -27,8 +27,8 @@ include('codC.php');
       height: 100vh;
       background-image: url('https://img.freepik.com/vetores-gratis/ilustracao-do-dia-do-meio-ambiente-no-mundo-plano_23-2148928197.jpg?t=st=1745606927~exp=1745610527~hmac=87544bca5b9e32c5d47d33b711c30ef81dfac9a1acae5f14b50335bdfd95a1eb&w=740'); /* Caminho da imagem */
       
-      background-repeat: no-repeat; /* não repete a imagem */
-      background-position: center; /* centraliza a imagem */
+      background-repeat: no-repeat; 
+      background-position: center; 
     }
 
     .container {
@@ -112,8 +112,8 @@ include('codC.php');
      <select id="escola_id" name="escola_id" required>
     <option value="">Selecione a escola</option>
     <option value="1">Escola EEEP Walter Ramos de Araújo</option>
-    <option value="2">Escola EEMTI Adelino Cunha Alcântra</option>
-    <option value="3">Escola EEM Waldemar Alcântra</option>
+    <option value="2">Escola EEMTI Adelino Cunha Alcântara</option>
+    <option value="3">Escola EEM Waldemar Alcântara</option>
     </select>
 
 
