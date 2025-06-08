@@ -30,8 +30,8 @@ function salvarPagamento($conexao, $idUsuario) {
     $responsavel = $_POST['responsavel'];
     $formpag = $_POST['pagamento'];
 
-    $sql_pag = "INSERT INTO pagamento (cnpj, nomeinst, endereço, nomeresp, formpag) 
-                VALUES (?, ?, ?, ?, ?)";
+    $sql_pag = "INSERT INTO pagamento (cnpj, nomeinst, endereco, nomeresp, formpag) 
+            VALUES (?, ?, ?, ?, ?)";
     $stmt = $conexao->prepare($sql_pag);
     $stmt->bind_param("sssss", $cnpj, $nomeinst, $endereco, $responsavel, $formpag);
 
