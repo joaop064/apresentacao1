@@ -1,5 +1,5 @@
 <?php
-session_start(); // importante para usar $_SESSION
+session_start(); 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     include('conexao.php');
@@ -24,19 +24,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Inserir o novo aluno
-    $stmt = $conexao->prepare("INSERT INTO aluno (nome, email, senha, escola_id) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("sssi", $nome, $email, $senha, $escola_id);
+    // Função para gerar matrícula aleatória única
+    function gerarMatriculaUnica($conexao) {
+        do {
+            
+            $matricula = strval(random_int(1000000, 9999999));
+
+            // Verifica se já existe essa matrícula no banco
+            $stmt = $conexao->prepare("SELECT id FROM aluno WHERE matricula = ?");
+            $stmt->bind_param("s", $matricula);
+            $stmt->execute();
+            $stmt->store_result();
+        } while ($stmt->num_rows > 0); // repete se matrícula já existir
+
+        return $matricula;
+    }
+
+    // Gerar matrícula única
+    $matricula = gerarMatriculaUnica($conexao);
+
+    // Inserir o novo aluno com a matrícula
+    $stmt = $conexao->prepare("INSERT INTO aluno (nome, email, senha, escola_id, matricula) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssis", $nome, $email, $senha, $escola_id, $matricula);
     $stmt->execute();
 
-    // Obter o ID do novo usuário
+    
     $novo_id = $conexao->insert_id;
 
-    // Armazenar os dados na sessão para login automático
+    
     $_SESSION['id'] = $novo_id;
     $_SESSION['nome'] = $nome;
+    $_SESSION['matricula'] = $matricula; // opcional, se quiser salvar na sessão
 
-    // Redirecionar para a página inicial
+    
     header("Location: inicio.php");
     exit();
 }
