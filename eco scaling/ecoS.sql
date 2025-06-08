@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 06/06/2025 às 09:28
+-- Tempo de geração: 08/06/2025 às 03:07
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -33,6 +33,7 @@ CREATE TABLE `aluno` (
   `email` varchar(100) NOT NULL,
   `senha` varchar(255) NOT NULL,
   `escola_id` int(11) NOT NULL,
+  `matricula` varchar(20) DEFAULT NULL,
   `comprou_jogos` tinyint(4) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -65,9 +66,10 @@ INSERT INTO `escola` (`id`, `nome`, `email`, `id_escola`) VALUES
 --
 
 CREATE TABLE `pagamento` (
-  `cnpj` int(50) NOT NULL,
+  `id` int(11) NOT NULL,
+  `cnpj` varchar(18) NOT NULL,
   `nomeinst` varchar(100) NOT NULL,
-  `endereço` varchar(50) NOT NULL,
+  `endereco` varchar(50) NOT NULL,
   `nomeresp` varchar(50) NOT NULL,
   `formpag` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -81,7 +83,8 @@ CREATE TABLE `pagamento` (
 --
 ALTER TABLE `aluno`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `matricula` (`matricula`);
 
 --
 -- Índices de tabela `escola`
@@ -93,7 +96,7 @@ ALTER TABLE `escola`
 -- Índices de tabela `pagamento`
 --
 ALTER TABLE `pagamento`
-  ADD PRIMARY KEY (`cnpj`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
@@ -103,13 +106,13 @@ ALTER TABLE `pagamento`
 -- AUTO_INCREMENT de tabela `aluno`
 --
 ALTER TABLE `aluno`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `pagamento`
 --
 ALTER TABLE `pagamento`
-  MODIFY `cnpj` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=624;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
