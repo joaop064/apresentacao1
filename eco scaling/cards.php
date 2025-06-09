@@ -19,7 +19,6 @@
       <li><a href="inicio.php">Início</a></li>
       <li><a href="ecogame.php">Ecogame</a></li>
       <li><a href="sobre.php">Sobre</a></li>
-      <li><a href="#contato">Contato</a></li>
     </ul>
     <div class="nav-right">
       <?php session_start(); ?>
