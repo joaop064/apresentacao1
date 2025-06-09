@@ -1,55 +1,70 @@
 <?php
-session_start();
 require_once 'conexao.php';
+session_start();
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
-    exit;
-}
-
-$id = $_SESSION['id'];
-
-// Verifica se o usuário já comprou
-$sql = "SELECT nome, email, comprou_jogos FROM aluno WHERE id = ?";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$resultado = $stmt->get_result();
-
-if ($resultado->num_rows === 1) {
-    $usuario = $resultado->fetch_assoc();
-    $comprouJogos = $usuario['comprou_jogos'] == 1;
-}
-
-// Função para salvar o pagamento e atualizar a compra do aluno
+// Função de validação e salvamento
 function salvarPagamento($conexao, $idUsuario) {
-    $cnpj = $_POST['cnpj'];
-    $nomeinst = $_POST['nome_instituicao'];
-    $endereco = $_POST['endereco'];
-    $responsavel = $_POST['responsavel'];
-    $formpag = $_POST['pagamento'];
+    $erros = [];
 
-    $sql_pag = "INSERT INTO pagamento (cnpj, nomeinst, endereco, nomeresp, formpag) 
-            VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conexao->prepare($sql_pag);
-    $stmt->bind_param("sssss", $cnpj, $nomeinst, $endereco, $responsavel, $formpag);
+    // Verifica se todos os campos obrigatórios foram enviados
+    if (!isset($_POST['nome_instituicao'], $_POST['cnpj'], $_POST['endereco'], $_POST['responsavel'], $_POST['pagamento'])) {
+        $erros[] = "Todos os campos obrigatórios devem ser preenchidos.";
+        return $erros;
+    }
+
+    $nomeInstituicao = trim($_POST['nome_instituicao']);
+    $cnpj = preg_replace('/[^0-9]/', '', trim($_POST['cnpj']));
+    $endereco = trim($_POST['endereco']);
+    $responsavel = trim($_POST['responsavel']);
+    $pagamento = $_POST['pagamento'];
+
+    // Validações
+    if (preg_match('/\d/', $nomeInstituicao)) {
+        $erros[] = "O nome da instituição não pode conter números.";
+    }
+
+    if (preg_match('/\d/', $responsavel)) {
+        $erros[] = "O nome do responsável não pode conter números.";
+    }
+
+    if (!preg_match('/^[0-9]{14}$/', $cnpj)) {
+        $erros[] = "CNPJ inválido. Ele deve conter exatamente 14 números (somente números).";
+    }
+
+    if (strlen($endereco) < 5) {
+        $erros[] = "O endereço informado é muito curto ou inválido.";
+    }
+
+    if (!empty($erros)) {
+        return $erros;
+    }
+
+    // Inserir pagamento
+    $stmt = $conexao->prepare("INSERT INTO pagamento (cnpj, nomeinst, endereco, nomeresp, formpag) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $cnpj, $nomeInstituicao, $endereco, $responsavel, $pagamento);
 
     if ($stmt->execute()) {
-        $sql_upd = "UPDATE aluno SET comprou_jogos = 1 WHERE id = ?";
-        $stmt = $conexao->prepare($sql_upd);
-        $stmt->bind_param("i", $idUsuario);
-        $stmt->execute();
+        // Atualizar aluno
+        $stmt_upd = $conexao->prepare("UPDATE aluno SET comprou_jogos = 1 WHERE id = ?");
+        $stmt_upd->bind_param("i", $idUsuario);
+        $stmt_upd->execute();
 
         header("Location: ecogame.php");
         exit;
     } else {
-        echo "<script>alert('Erro ao inserir: " . $stmt->error . "');</script>";
+        return ["Erro ao salvar pagamento: " . $stmt->error];
     }
 }
 
-// Somente chama se for POST
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    salvarPagamento($conexao, $id);
+// Executa somente se for POST
+$idUsuario = $_SESSION['id'] ?? null;
+$mensagem = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $idUsuario) {
+    $mensagem = salvarPagamento($conexao, $idUsuario);
 }
+
+// Dados de exemplo para exibição
+$linkQrCodePix = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=chavepix%40ecogame.com';
+$codigoBoleto = '34191.79001 01043.510047 91020.150008 2 85770000002000';
 ?>
