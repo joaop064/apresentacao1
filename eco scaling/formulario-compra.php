@@ -1,97 +1,73 @@
+
+
+
+
 <?php
 require_once 'conexao.php';
 session_start();
 
-function validarTextoSemNumeros($texto) {
-    return preg_match("/^[A-Za-zÀ-ÿ\s]+$/u", $texto);
-}
-
-function validarCNPJ($cnpj) {
-    return preg_match("/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/", $cnpj);
-}
-
-function validarNumeroCartao($numero) {
-    return preg_match("/^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/", $numero);
-}
-
-function validarValidade($validade) {
-    return preg_match("/^(0[1-9]|1[0-2])\/\d{2}$/", $validade);
-}
-
-function validarCVV($cvv) {
-    return preg_match("/^\d{3}$/", $cvv);
-}
-
 function salvarPagamento($conexao, $idUsuario) {
+    $erros = [];
+
     if (!isset($_POST['nome_instituicao'], $_POST['cnpj'], $_POST['endereco'], $_POST['responsavel'], $_POST['pagamento'])) {
-        return "Erro ao encontrar/receber os dados. Verifique o preenchimento do formulário.";
+        $erros[] = "Todos os campos obrigatórios devem ser preenchidos.";
+        return $erros;
     }
 
     $nomeInstituicao = trim($_POST['nome_instituicao']);
-    $cnpj = trim($_POST['cnpj']);
+    $cnpj = preg_replace('/[^0-9]/', '', trim($_POST['cnpj']));
     $endereco = trim($_POST['endereco']);
     $responsavel = trim($_POST['responsavel']);
     $pagamento = $_POST['pagamento'];
 
-    // Validações
-    if (!validarTextoSemNumeros($nomeInstituicao)) {
-        return "Erro: O nome da instituição deve conter apenas letras.";
+    if (preg_match('/^\d+$/', $nomeInstituicao)) {
+        $erros[] = "O nome da instituição não pode conter apenas números.";
     }
 
-    if (!validarTextoSemNumeros($responsavel)) {
-        return "Erro: O nome do responsável deve conter apenas letras.";
+    if (preg_match('/\d/', $responsavel)) {
+        $erros[] = "O nome do responsável não pode conter números.";
     }
 
-    if (!validarCNPJ($cnpj)) {
-        return "Erro: CNPJ inválido. Use o formato 00.000.000/0000-00.";
+    if (!preg_match('/^[0-9]{14}$/', $cnpj)) {
+        $erros[] = "CNPJ inválido. Ele deve conter exatamente 14 números (somente números).";
     }
 
-    // Se for pagamento por cartão, validar os campos do cartão
-    if (in_array($pagamento, ['visa', 'mastercard'])) {
-        $numeroCartao = $_POST['numero_cartao'] ?? '';
-        $nomeCartao = $_POST['nome_cartao'] ?? '';
-        $validadeCartao = $_POST['validade_cartao'] ?? '';
-        $cvvCartao = $_POST['cvv_cartao'] ?? '';
-
-        if (!validarNumeroCartao($numeroCartao)) {
-            return "Erro: Número do cartão inválido.";
-        }
-
-        if (!validarTextoSemNumeros($nomeCartao)) {
-            return "Erro: O nome no cartão deve conter apenas letras.";
-        }
-
-        if (!validarValidade($validadeCartao)) {
-            return "Erro: Validade do cartão inválida. Use o formato MM/AA.";
-        }
-
-        if (!validarCVV($cvvCartao)) {
-            return "Erro: CVV inválido. Deve conter 3 dígitos.";
-        }
+    if (strlen($endereco) < 5) {
+        $erros[] = "O endereço informado é muito curto ou inválido.";
     }
 
-    $stmt = $conexao->prepare("INSERT INTO pagamentos (id_usuario, nome_instituicao, cnpj, endereco, responsavel, forma_pagamento, data_pagamento) VALUES (?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->bind_param("isssss", $idUsuario, $nomeInstituicao, $cnpj, $endereco, $responsavel, $pagamento);
+    if (!empty($erros)) {
+        return $erros;
+    }
+
+    // Inserir no banco
+    $stmt = $conexao->prepare("INSERT INTO pagamento (cnpj, nomeinst, endereco, nomeresp, formpag) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $cnpj, $nomeInstituicao, $endereco, $responsavel, $pagamento);
 
     if ($stmt->execute()) {
-        return "Pagamento registrado com sucesso!";
+        // Atualizar status de compra
+        $stmt_upd = $conexao->prepare("UPDATE aluno SET comprou_jogos = 1 WHERE id = ?");
+        $stmt_upd->bind_param("i", $idUsuario);
+        $stmt_upd->execute();
+
+        return ["Pagamento registrado com sucesso!"];
     } else {
-        return "Erro ao salvar pagamento: " . $stmt->error;
+        return ["Erro ao salvar pagamento: " . $stmt->error];
     }
 }
 
-// Geração de dados falsos como exemplo
-$idUsuario = $_SESSION['id_usuario'] ?? 1;
-$mensagem = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$idUsuario = $_SESSION['id'] ?? null;
+$mensagem = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $idUsuario) {
     $mensagem = salvarPagamento($conexao, $idUsuario);
 }
 
-// Exemplo de links fictícios
 $linkQrCodePix = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=chavepix%40ecogame.com';
 $codigoBoleto = '34191.79001 01043.510047 91020.150008 2 85770000002000';
-
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -251,11 +227,17 @@ $codigoBoleto = '34191.79001 01043.510047 91020.150008 2 85770000002000';
 <div class="form-container">
   <h2>Formulário de Compra</h2>
 
-  <?php if (!empty($mensagem)): ?>
-    <p style="color: green;"><?= htmlspecialchars($mensagem) ?></p>
-  <?php endif; ?>
+ <?php if (!empty($mensagem)): ?>
+  <ul style="color: <?= str_contains(implode('', $mensagem), 'sucesso') ? 'green' : 'red' ?>;">
+    <?php foreach ($mensagem as $msg): ?>
+      <li><?= htmlspecialchars($msg) ?></li>
+    <?php endforeach; ?>
+  </ul>
+<?php endif; ?>
 
-  <form method="POST">
+
+
+  <form method="POST" action="formulario-compra.php">
     <div class="form-group">
       <label for="nome_instituicao">Nome da instituição:</label>
       <input type="text" id="nome_instituicao" name="nome_instituicao" required />
