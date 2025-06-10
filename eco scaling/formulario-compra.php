@@ -1,11 +1,13 @@
 
 
-
-
 <?php
 require_once 'conexao.php';
 session_start();
-
+if (!isset($_SESSION['id'])) {
+    // Redireciona para a página de login
+    header("Location: login.php");
+    exit;
+}
 function salvarPagamento($conexao, $idUsuario) {
     $erros = [];
 
