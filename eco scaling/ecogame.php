@@ -273,18 +273,28 @@ if (isset($_SESSION['id'])) {
     <p>Diversão e aprendizado para crianças do Ensino Fundamental!</p>
   </header>
 
-  <section class="game" id="jogos">
-    <h2>🧠 Quiz de Sustentabilidade</h2>
-    <p>Este é um jogo de perguntas e respostas sobre sustentabilidade. As crianças terão várias perguntas para responder, como:</p>
-    <ul>
-      <li>O que é reciclagem?</li>
-      <li>Como podemos economizar água?</li>
-      <li>Por que devemos cuidar das florestas?</li>
-    </ul>
-    <p>Ao errar uma pergunta, o jogo mostrará a resposta correta, com uma explicação clara.</p>
-  </section>
+  
 
-    
+  <section class="game">
+    <h2>🖼️ Jogo das Imagens Iguais</h2>
+    <p>As crianças devem encontrar pares de imagens relacionadas à sustentabilidade, como:</p>
+    <ul>
+      <li>Duas imagens de árvores.</li>
+      <li>Duas imagens de reciclagem.</li>
+    </ul>
+    <blockquote>"Você sabia que uma árvore adulta pode absorver até 150 kg de CO₂ por ano?"</blockquote>
+  </section>
+  <section class="benefits">
+  <h2>🧠 Por que o Jogo das Imagens Iguais é importante?</h2>
+  <ul>
+    <li>Desenvolve a memória visual e a concentração.</li>
+    <li>Estimula o reconhecimento de elementos relacionados à sustentabilidade.</li>
+    <li>Ajuda no aprendizado de conceitos ecológicos por meio da associação de imagens.</li>
+    <li>Promove o raciocínio lógico de maneira lúdica e divertida.</li>
+  </ul>
+  <blockquote>"Aprender brincando é uma forma poderosa de fixar conhecimentos essenciais para o futuro do planeta."</blockquote>
+</section>
+
   <section class="game" id="ecocoleta">
     <h2>♻️ O que é o jogo Eco-Coleta?</h2>
     <p>No Eco-Coleta, as crianças aprendem sobre a separação do lixo de forma divertida e interativa! O objetivo é arrastar corretamente cada tipo de resíduo para a lixeira correspondente:</p>
@@ -297,8 +307,7 @@ if (isset($_SESSION['id'])) {
     </ul>
     <p>A cada acerto, o jogador ganha pontos e aprende mais sobre os materiais recicláveis!</p>
   </section>
-
-  <section class="benefits">
+   <section class="benefits">
     <h2>🌱 Por que o Eco-Coleta é importante?</h2>
     <ul>
       <li>Ensina a importância da coleta seletiva.</li>
