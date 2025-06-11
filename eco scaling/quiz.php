@@ -1,634 +1,360 @@
-
 <?php
 session_start();
 require_once 'conexao.php';
 
-if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
-    exit;
-}
+$comprouJogos = false;
+$nomeUsuario = '';
 
-// Verifica se o usuário comprou
-$id = $_SESSION['id'];
-$sql = "SELECT comprou_jogos FROM aluno WHERE id = ?";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+if (isset($_SESSION['id'])) {
+    $id = $_SESSION['id'];
 
-if ($result->num_rows !== 1 || !$result->fetch_assoc()['comprou_jogos']) {
-    echo "<h2 style='text-align:center;color:red;'>⚠️ Acesso negado. Compre os jogos para jogar.</h2>";
-    exit;
+    $sql = "SELECT nome, comprou_jogos FROM aluno WHERE id = ?";
+    $stmt = $conexao->prepare($sql);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 1) {
+        $usuario = $result->fetch_assoc();
+        $nomeUsuario = $usuario['nome'];
+        $comprouJogos = $usuario['comprou_jogos'] == 1;
+    }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz EcoScaling - Revisão Detalhada</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jogos Educativos - Sustentabilidade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary-color: #4CAF50; /* Green for eco-theme */
-      --primary-light: #66BB6A;
-      --primary-dark: #388E3C;
-      
-      /* Light Theme Palette */
-      --background-color: #f4f7f9; 
-      --surface-color: #ffffff;   
-      --text-color: #212121;     
-      --text-color-muted: #5f6368;
-      --border-color: #d1d9de;   
-      --shadow-color: rgba(0,0,0,0.1);
-      --danger-color: #dc3545; /* Red for incorrect answers */
-      --light-green-accent: #e8f5e9; /* For correct answer highlights or celebration bg */
-      --warning-bg-color: #fff3cd; /* Light yellow for encouragement messages */
-      --warning-text-color: #856404;
-
-
-      --transition-speed: 0.4s;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, var(--background-color) 0%, #e9edf0 100%);
-      color: var(--text-color);
-      margin: 0;
-      padding: 20px;
+      background-color: #f0f8f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    nav {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      /* justify-content: center; /* Can be removed if content grows too tall */
-      min-height: 100vh;
-      box-sizing: border-box;
-      overflow-x: hidden; 
+      justify-content: space-between;
+      background: #2e7d32;
+      height: 8vh;
+      padding: 0 20px;
+      position: relative;
     }
 
-    .quiz-app-container {
-      width: 100%;
-      max-width: 700px; /* Adjusted for potentially longer result screen */
-      margin: 20px auto;
+    .logo {
+      font-size: 25px;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      font-weight: bold;
+      color: white;
     }
 
-    .navigation-area {
-      width: 100%;
-      margin-bottom: 20px; 
-      text-align: left; 
-    }
-
-    .btn-voltar {
-      display: inline-flex; 
+    .nav-menu-right {
+      display: flex;
       align-items: center;
-      padding: 8px 15px;
-      background-color: var(--surface-color); 
-      color: var(--text-color-muted);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 500;
+      gap: 20px;
+    }
+
+    .nav-list {
+      display: flex;
+      list-style: none;
+      gap: 25px;
+    }
+
+    .nav-list li a {
+      color: white;
       text-decoration: none;
-      transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      font-weight: 500;
     }
 
-    .btn-voltar:hover {
-      background-color: #f0f0f0; 
-      color: var(--primary-dark);
-      border-color: #c0c8cd;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .btn-voltar svg {
-      margin-right: 6px; 
-      fill: currentColor; 
-      width: 18px;
-      height: 18px;
+    .perfil-link {
+      display: flex;
+      align-items: center;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
     }
 
-    .quiz-header {
-      text-align: center;
-      margin-bottom: 30px;
+    .perfil-link img {
+      width: 40px;
+      height: 40px;
+      margin-right: 8px;
     }
 
-    .quiz-header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--primary-dark); 
-      margin-bottom: 10px;
+    .mobile-menu {
+      display: none;
+      cursor: pointer;
     }
 
-    .progress-container {
-      width: 100%;
-      background-color: var(--border-color); 
-      border-radius: 5px;
-      height: 10px;
-      margin-top: 15px;
-      overflow: hidden;
+    .mobile-menu div {
+      width: 32px;
+      height: 2px;
+      background: #fff;
+      margin: 8px;
+      transition: 0.3s;
     }
 
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background-color: var(--primary-color);
-      border-radius: 5px;
-      transition: width var(--transition-speed) ease-in-out;
-    }
+    @media (max-width: 999px) {
+      .nav-list {
+        position: absolute;
+        top: 8vh;
+        right: 0;
+        width: 50vw;
+        height: 92vh;
+        background: #2e7d32;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in;
+        z-index: 999;
+      }
 
-    .quiz-container {
-      background: var(--surface-color);
-      padding: 30px 40px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px var(--shadow-color);
-      text-align: center;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeIn var(--transition-speed) forwards;
-      margin-bottom: 20px; 
-    }
+      .nav-list.active {
+        transform: translateX(0);
+      }
 
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
+      .mobile-menu {
+        display: block;
+      }
+
+      .mobile-menu.active .line1 {
+        transform: rotate(-45deg) translate(-8px, 8px);
+      }
+
+      .mobile-menu.active .line2 {
+        opacity: 0;
+      }
+
+      .mobile-menu.active .line3 {
+        transform: rotate(45deg) translate(-5px, -7px);
       }
     }
 
-    .question-area { /* Mantido para a área de perguntas */
-      opacity: 1;
-      transition: opacity var(--transition-speed) ease-out, transform var(--transition-speed) ease-out;
-    }
-    .question-area.fade-out {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-     .question-area.fade-in { /* Não mais usado diretamente se resultadoDiv controla tudo */
-      opacity: 1;
-      transform: translateX(0px);
-    }
-
-    .pergunta {
-      font-size: 1.5rem;
-      margin-bottom: 30px;
-      color: var(--text-color);
-      font-weight: 600;
-      line-height: 1.6;
-      min-height: 50px; /* Para evitar saltos de layout */
-    }
-
-    .opcoes-container {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      min-height: 200px; /* Para evitar saltos de layout */
-    }
-
-    .opcao {
-      display: block;
-      width: 100%;
-      padding: 15px 20px;
-      border: 2px solid var(--border-color);
-      border-radius: 10px;
-      background-color: var(--surface-color); 
-      color: var(--text-color-muted);
-      cursor: pointer;
-      transition: background-color var(--transition-speed) ease,
-                  transform var(--transition-speed) ease,
-                  border-color var(--transition-speed) ease,
-                  color var(--transition-speed) ease,
-                  box-shadow 0.2s ease;
-      font-size: 1rem;
-      font-weight: 400;
-      text-align: left;
-    }
-
-    .opcao:hover {
-      background-color: #f0f0f0; 
-      border-color: var(--primary-light);
-      color: var(--primary-dark); 
-      transform: scale(1.02);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.07);
-    }
-
-    .opcao:active {
-      transform: scale(0.98);
-      background-color: #e9e9e9; 
-    }
-
-    /* Estilos para a área de resultado detalhado */
-    .resultado-final { /* Container principal dos resultados */
-      margin-top: 20px;
-      text-align: left; /* Alinha o conteúdo do resultado à esquerda */
-      opacity: 0; 
-      transform: translateY(20px);
-       /* min-height não é mais necessário aqui, o conteúdo definirá a altura */
-    }
-    .resultado-final.show {
-        opacity: 1;
-        transform: translateY(0);
-        transition: opacity 0.5s ease-out var(--transition-speed), transform 0.5s ease-out var(--transition-speed);
-    }
-
-    .score-summary {
-        font-size: 1.8rem;
-        color: var(--primary-dark);
-        margin-bottom: 10px;
-        text-align: center;
-    }
-    .quiz-feedback {
-        font-size: 1.1rem;
-        margin-bottom: 25px;
-        padding: 12px;
-        border-radius: var(--default-border-radius);
-        text-align: center;
-    }
-    .quiz-feedback.celebration {
-        background-color: var(--light-green-accent);
-        color: var(--primary-dark);
-    }
-    .quiz-feedback.encouragement {
-        background-color: var(--warning-bg-color);
-        color: var(--warning-text-color);
-    }
-
-    .resultados-detalhados-titulo {
-        font-size: 1.5rem;
-        color: var(--text-color);
-        margin-top: 30px;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--border-color);
-    }
-    .question-review-item {
-        background-color: var(--surface-color);
-        border: 1px solid var(--border-color);
-        border-radius: var(--default-border-radius);
-        padding: 15px 20px;
-        margin-bottom: 20px;
-        box-shadow: var(--shadow-soft);
-    }
-    .question-review-item.review-correct {
-        border-left: 5px solid var(--primary-color);
-    }
-    .question-review-item.review-incorrect {
-        border-left: 5px solid var(--danger-color);
-    }
-    .review-question-text {
-        font-weight: 600;
-        color: var(--text-color);
-        margin-bottom: 10px;
-        font-size: 1.1em;
-    }
-    .review-user-answer, .review-correct-answer {
-        margin-bottom: 8px;
-        font-size: 1em;
-    }
-    .answer-correct {
-        color: var(--primary-dark);
-        font-weight: bold;
-    }
-    .answer-incorrect {
-        color: var(--danger-color);
-        font-weight: bold;
-        text-decoration: line-through;
-    }
-    .answer-correct-highlight {
-        color: var(--primary-dark);
-        font-weight: bold;
-        background-color: var(--light-green-accent);
-        padding: 2px 5px;
-        border-radius: 3px;
-    }
-    .review-explanation {
-        margin-top: 12px;
-        font-size: 0.95em;
-        color: var(--text-color-muted);
-        background-color: #f8f9fa; 
-        padding: 12px;
-        border-radius: var(--default-border-radius);
-        border-top: 2px dashed var(--border-color);
-    }
-    .review-explanation strong {
-        color: var(--text-color);
-    }
-
-    .btn-recomecar {
-      display: block; 
-      margin: 30px auto 10px; /* Ajustada margem */
-      padding: 12px 25px;
-      background-color: var(--primary-color);
+    header {
+      background-color: #4CAF50;
       color: white;
-      border: none;
+      padding: 30px;
+      text-align: center;
+      border-radius: 10px;
+      margin: 20px;
+    }
+
+    section {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    section h2 {
+      margin-bottom: 10px;
+      color: #4CAF50;
+    }
+
+    section ul {
+      margin-top: 10px;
+      padding-left: 20px;
+    }
+
+    blockquote {
+      margin: 15px 0;
+      padding: 10px 20px;
+      background-color: #e0f7e9;
+      border-left: 5px solid #4CAF50;
+      border-radius: 5px;
+      font-style: italic;
+    }
+
+    .benefits ul {
+      list-style-type: "✅ ";
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 10px;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    .btn-comprar {
+      display: inline-block;
+      margin: 20px auto;
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
       border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color var(--transition-speed) ease, transform 0.2s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      opacity: 0; 
-      transform: translateY(10px); 
-      pointer-events: none; 
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      text-align: center;
+      font-size: 16px;
     }
 
-    .btn-recomecar.show {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto; 
-        transition: opacity 0.3s ease var(--transition-speed), transform 0.3s ease var(--transition-speed); 
+    .btn-comprar:hover {
+      background-color: #388e3c;
     }
 
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .btn-voltar { font-size: 0.85rem; padding: 7px 12px; }
-      .btn-voltar svg { width: 16px; height: 16px; }
-      .quiz-header h1 { font-size: 2rem; }
-      .pergunta { font-size: 1.3rem; }
-      .opcao { padding: 12px 15px; font-size: 0.95rem; }
-      .quiz-container { padding: 25px 20px; }
-      .score-summary { font-size: 1.6rem; }
-      .resultados-detalhados-titulo { font-size: 1.3rem; }
-      .btn-recomecar { font-size: 0.95rem; padding: 10px 20px;}
+    .btn-comprar span.preco {
+      margin-left: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 8px;
+      border-radius: 8px;
     }
 
-    @media (max-width: 480px) {
-      .btn-voltar { font-size: 0.8rem; padding: 6px 10px; }
-      .btn-voltar svg { width: 14px; height: 14px; margin-right: 4px; }
-      .navigation-area { margin-bottom: 15px; }
-      body { padding: 10px; }
-      .quiz-header h1 { font-size: 1.8rem; }
-      .pergunta { font-size: 1.1rem; margin-bottom: 20px; }
-      .opcoes-container { gap: 10px; }
-      .opcao { padding: 10px; font-size: 0.9rem; }
-      .quiz-container { padding: 20px 15px; }
-      .score-summary { font-size: 1.4rem;}
-      .resultados-detalhados-titulo { font-size: 1.2rem; }
-      .btn-recomecar { font-size: 0.9rem; padding: 10px 18px;}
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      header h1 {
+        font-size: 1.5em;
+      }
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
   </style>
 </head>
 <body>
-  <div class="quiz-app-container">
 
-    <div class="navigation-area">
-      <a href="ecogame.php" class="btn-voltar">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z"></path>
-        </svg>
-        Voltar
-      </a>
-    </div>
-
-    <header class="quiz-header">
-      <h1>Quiz EcoScaling</h1>
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
+  <nav>
+    <a class="logo">EcoScaling</a>
+    <div class="nav-menu-right">
+      <ul class="nav-list">
+        <li><a href="inicio.php">Início</a></li>
+        <li><a href="cards.php">Cards</a></li>
+        <li><a href="sobre.php">Sobre</a></li>
+       <?php if ($comprouJogos): ?>
+       <li><a href="#meus-jogos">Jogos</a></li>
+       <?php endif; ?>
+      </ul>
+      <div class="nav-right">
+        <?php if (isset($_SESSION['id'])): ?>
+          <a href="usuario.php" class="perfil-link">
+            <img src="logo.png" alt="Logo" class="logo1">
+            <span>Perfil</span>
+          </a>
+        <?php else: ?>
+          <a href="login.php" class="btn-comprar">Login/Cadastro</a>
+        <?php endif; ?>
       </div>
-    </header>
+    </div>
+    <div class="mobile-menu">
+      <div class="line1"></div>
+      <div class="line2"></div>
+      <div class="line3"></div>
+    </div>
+  </nav>
 
-    <main>
-      <div class="quiz-container">
-        <div id="question-area" class="question-area">
-          <div id="pergunta" class="pergunta"></div>
-          <div id="opcoes" class="opcoes-container"></div>
-        </div>
-        <div id="resultado" class="resultado-final"></div> </div>
-      <button id="reiniciarBtn" class="btn-recomecar">Recomeçar Quiz</button>
-    </main>
+  <header>
+    <h1>Jogos Educativos sobre Sustentabilidade</h1>
+    <p>Diversão e aprendizado para crianças do Ensino Fundamental!</p>
+  </header>
+
+  <section class="game" id="jogos">
+    <h2>🧠 Quiz de Sustentabilidade</h2>
+    <p>Este é um jogo de perguntas e respostas sobre sustentabilidade. As crianças terão várias perguntas para responder, como:</p>
+    <ul>
+      <li>O que é reciclagem?</li>
+      <li>Como podemos economizar água?</li>
+      <li>Por que devemos cuidar das florestas?</li>
+    </ul>
+    <p>Ao errar uma pergunta, o jogo mostrará a resposta correta, com uma explicação clara.</p>
+  </section>
+
+    
+  <section class="game" id="ecocoleta">
+    <h2>♻️ O que é o jogo Eco-Coleta?</h2>
+    <p>No Eco-Coleta, as crianças aprendem sobre a separação do lixo de forma divertida e interativa! O objetivo é arrastar corretamente cada tipo de resíduo para a lixeira correspondente:</p>
+    <ul>
+      <li>Plástico na lixeira vermelha</li>
+      <li>Papel na lixeira azul</li>
+      <li>Metal na lixeira amarela</li>
+      <li>Vidro na lixeira verde</li>
+      <li>Orgânico na lixeira marrom</li>
+    </ul>
+    <p>A cada acerto, o jogador ganha pontos e aprende mais sobre os materiais recicláveis!</p>
+  </section>
+
+  <section class="benefits">
+    <h2>🌱 Por que o Eco-Coleta é importante?</h2>
+    <ul>
+      <li>Ensina a importância da coleta seletiva.</li>
+      <li>Promove hábitos sustentáveis desde a infância.</li>
+      <li>Trabalha coordenação motora e raciocínio rápido.</li>
+    </ul>
+    <blockquote>"Separar o lixo corretamente é um pequeno gesto que faz uma grande diferença no planeta!"</blockquote>
+  </section>
+
+  <section class="info" id="sobre">
+    <h2>ℹ️ Sobre o projeto</h2>
+    <p>O Eco-Coleta é um jogo educativo pensado para alunos do Ensino Fundamental. Com ele, as crianças aprendem de forma lúdica a importância de cuidar do planeta e como realizar a separação correta dos resíduos.</p>
+  </section>
+
+  <section class="benefits">
+    <h2>🎯 Por que esses jogos são importantes?</h2>
+    <ul>
+      <li>Estimula o raciocínio lógico e a memória.</li>
+      <li>Ensina sustentabilidade de forma lúdica.</li>
+      <li>Desperta interesse pela preservação ambiental.</li>
+    </ul>
+  </section>
+
+  <section class="info" id="sobre">
+    <h2>ℹ️ Mais informações</h2>
+    <p>Os jogos são ideais para o Ensino Fundamental, promovendo respeito à natureza e cidadania.</p>
+  </section>
+
+  <?php if (!$comprouJogos): ?>
+  <div style="text-align:center;">
+    <a href="formulario-compra.php" class="btn-comprar">
+      Comprar acesso <span class="preco">R$ 20,00</span>
+    </a>
   </div>
+  <?php endif; ?>
+
+  <?php if ($comprouJogos): ?>
+  <section class="games-links" id="meus-jogos" style="text-align:center;">
+    <h2>🎮 Acesse seus jogos!</h2>
+    <a href="ecocoleta.php" class="btn-comprar">Eco-coleta</a>
+    <a href="memoria.php" class="btn-comprar">Jogo da Memória</a>
+  </section>
+  <?php endif; ?>
+
+  <footer id="contato">
+    <p>Desenvolvido com ❤️ para a educação ambiental.</p>
+  </footer>
 
   <script>
-    const perguntas = [
-      {
-        texto: "Por que é importante pensar no futuro ao consumir recursos naturais?",
-        opcoes: [
-          "Porque os recursos são infinitos e sempre existirão",
-          "Para garantir que as próximas gerações também tenham acesso a eles",
-          "Porque isso ajuda a gastar mais energia"
-        ],
-        resposta: "Para garantir que as próximas gerações também tenham acesso a eles",
-        explicacao: "Os recursos naturais, mesmo os renováveis, podem se esgotar ou degradar se consumidos de forma insustentável. Pensar no futuro (sustentabilidade) é garantir que nossos filhos e netos também possam usufruir desses recursos. As outras opções são incorretas porque os recursos não são infinitos e consumir de forma consciente geralmente leva a economizar energia."
-      },
-      {
-        texto: "Qual das ações abaixo mais contribui para o consumo consciente?",
-        opcoes: [
-          "Comprar produtos descartáveis por serem baratos",
-          "Reutilizar materiais e evitar desperdício",
-          "Consumir produtos de grandes marcas apenas"
-        ],
-        resposta: "Reutilizar materiais e evitar desperdício",
-        explicacao: "Consumo consciente envolve reduzir o impacto de nossas escolhas. Reutilizar e evitar desperdício diminuem a necessidade de nova produção, economizando recursos e energia. Comprar produtos descartáveis aumenta o lixo, e focar apenas em grandes marcas não garante sustentabilidade."
-      },
-      {
-        texto: "Sobre energias renováveis, assinale a alternativa correta:",
-        opcoes: [
-          "Elas são finitas e causam poluição intensa",
-          "Vêm de fontes naturais que se renovam constantemente",
-          "São obtidas apenas por meio do petróleo"
-        ],
-        resposta: "Vêm de fontes naturais que se renovam constantemente",
-        explicacao: "Energias renováveis (solar, eólica, hidrelétrica, etc.) são chamadas assim porque suas fontes são naturalmente reabastecidas. Elas são chave para reduzir a poluição e o impacto das mudanças climáticas, ao contrário dos combustíveis fósseis como o petróleo, que são finitos e mais poluentes."
-      },
-      {
-        texto: "A reciclagem é importante porque:",
-        opcoes: [
-          "Diminui a necessidade de extrair novos recursos",
-          "Aumenta a produção de lixo nas cidades",
-          "É uma forma de gastar mais energia elétrica"
-        ],
-        resposta: "Diminui a necessidade de extrair novos recursos",
-        explicacao: "Reciclar transforma materiais usados em novos produtos, reduzindo a extração de matéria-prima da natureza, o consumo de energia na produção e o volume de lixo em aterros. Isso conserva recursos naturais e protege o meio ambiente."
-      },
-      {
-        texto: "O turismo sustentável busca:",
-        opcoes: [
-          "Reduzir o número de turistas nos lugares famosos",
-          "Promover viagens de luxo sem se preocupar com o ambiente",
-          "Valorizar o meio ambiente e a cultura local ao viajar"
-        ],
-        resposta: "Valorizar o meio ambiente e a cultura local ao viajar",
-        explicacao: "Turismo sustentável visa minimizar os impactos negativos no ambiente e na cultura local, ao mesmo tempo que gera renda e conservação. Não se trata de proibir viagens ou focar apenas no luxo, mas sim em viajar com responsabilidade e respeito."
-      },
-      {
-        texto: "Uma construção sustentável deve:",
-        opcoes: [
-          "Utilizar materiais recicláveis e priorizar eficiência energética",
-          "Ser feita rapidamente com qualquer material",
-          "Ignorar o impacto ambiental desde que seja moderna"
-        ],
-        resposta: "Utilizar materiais recicláveis e priorizar eficiência energética",
-        explicacao: "Construções sustentáveis buscam reduzir o impacto ambiental em todo o seu ciclo de vida. Isso inclui o uso de materiais de baixo impacto (reciclados, locais, renováveis), design que maximize a eficiência energética (luz natural, ventilação, isolamento) e o uso consciente da água."
-      },
-      {
-        texto: "Qual a relação entre alimentação e sustentabilidade?",
-        opcoes: [
-          "Nenhuma, comer não afeta o planeta",
-          "Escolher alimentos locais e da estação reduz impactos ambientais",
-          "Quanto mais industrializado o alimento, mais sustentável ele é"
-        ],
-        resposta: "Escolher alimentos locais e da estação reduz impactos ambientais",
-        explicacao: "Nossa alimentação tem grande impacto ambiental. Produzir, processar e transportar alimentos consome recursos e gera emissões. Optar por alimentos locais e da estação reduz a pegada de carbono do transporte, apoia a economia local e geralmente significa alimentos mais frescos e menos processados. Alimentos altamente industrializados costumam ter uma pegada ambiental maior."
-      },
-      {
-        texto: "Economizar água é importante porque:",
-        opcoes: [
-          "A água é um recurso renovável ilimitado",
-          "Ajuda a evitar o racionamento e preservar os mananciais",
-          "A água potável pode ser facilmente fabricada"
-        ],
-        resposta: "Ajuda a evitar o racionamento e preservar os mananciais",
-        explicacao: "Embora a água seja um recurso renovável, a água potável e acessível é finita e sua disponibilidade é ameaçada pela poluição, desperdício e mudanças climáticas. Economizar água ajuda a garantir o abastecimento para todos, preserva ecossistemas aquáticos e reduz a energia gasta no tratamento e distribuição."
-      }
-    ];
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const navList = document.querySelector('.nav-list');
 
-    let indicePerguntaAtual = 0;
-    let acertos = 0;
-    const totalPerguntas = perguntas.length;
-    let respostasUsuario = new Array(totalPerguntas).fill(null); // Para armazenar as respostas do usuário
-
-    const perguntaDiv = document.getElementById("pergunta");
-    const opcoesDiv = document.getElementById("opcoes");
-    const resultadoDiv = document.getElementById("resultado");
-    const progressBar = document.getElementById("progressBar");
-    const questionArea = document.getElementById("question-area"); // Container da pergunta e opções
-    const reiniciarBtn = document.getElementById("reiniciarBtn");
-
-    const transitionDelay = 400; 
-
-    function atualizarBarraProgresso() {
-      if (!progressBar) return;
-      const progressoPercentual = ((indicePerguntaAtual + 1) / totalPerguntas) * 100;
-      progressBar.style.width = `${progressoPercentual}%`;
-    }
-     function atualizarBarraProgressoFinal() {
-        if (!progressBar) return;
-        progressBar.style.width = `100%`;
-    }
-
-    function carregarPergunta() {
-      if (!questionArea || !perguntaDiv || !opcoesDiv) return;
-
-      questionArea.classList.remove('fade-in'); // Garante que está pronto para fade-out
-      questionArea.classList.add('fade-out');
-
-      setTimeout(() => {
-        const p = perguntas[indicePerguntaAtual];
-        perguntaDiv.textContent = p.texto;
-        opcoesDiv.innerHTML = '';
-
-        const shuffledOpcoes = [...p.opcoes].sort(() => Math.random() - 0.5);
-
-        shuffledOpcoes.forEach(op => {
-          const btn = document.createElement("button");
-          btn.className = "opcao";
-          btn.textContent = op;
-          btn.onclick = () => {
-            respostasUsuario[indicePerguntaAtual] = op; // Armazena a resposta do usuário
-            if (op === p.resposta) acertos++;
-            
-            indicePerguntaAtual++;
-            if (indicePerguntaAtual < totalPerguntas) {
-              carregarPergunta();
-            } else {
-              mostrarResultado();
-            }
-          };
-          opcoesDiv.appendChild(btn);
-        });
-        
-        if (indicePerguntaAtual < totalPerguntas) { 
-            atualizarBarraProgresso();
-        }
-        questionArea.style.display = 'block'; // Garante que está visível antes de animar entrada
-        questionArea.classList.remove('fade-out');
-        questionArea.classList.add('fade-in');
-        // A classe fade-in será removida pelo CSS após a animação ou pode ser removida via JS se necessário
-        // Não vamos remover via JS aqui para simplificar e deixar a animação CSS controlar.
-
-      }, transitionDelay);
-    }
-
-    function mostrarResultado() {
-      if(!questionArea || !resultadoDiv || !reiniciarBtn) return;
-
-      atualizarBarraProgressoFinal(); 
-      questionArea.classList.add('fade-out');
-
-      setTimeout(() => {
-        questionArea.style.display = 'none'; 
-        resultadoDiv.innerHTML = ''; // Limpa conteúdo anterior
-
-        let detalheResultadoHTML = `<h3 class="score-summary">Você acertou ${acertos} de ${totalPerguntas} perguntas!</h3>`;
-        
-        // Mensagens de feedback baseadas na pontuação
-        if (acertos / totalPerguntas >= 0.7) {
-            detalheResultadoHTML += `<p class="quiz-feedback celebration">🎉 Excelente! Você está no caminho certo para a sustentabilidade!</p>`;
-        } else if (acertos / totalPerguntas >= 0.4) {
-            detalheResultadoHTML += `<p class="quiz-feedback encouragement">👍 Bom trabalho! Continue aprendendo e fazendo a diferença!</p>`;
-        } else {
-            detalheResultadoHTML += `<p class="quiz-feedback encouragement">🌱 Todo conhecimento é valioso. Continue explorando a sustentabilidade!</p>`;
-        }
-
-        detalheResultadoHTML += `<div class="resultados-detalhados-titulo">Revisão das Perguntas:</div>`;
-
-        perguntas.forEach((pergunta, index) => {
-            const userAnswer = respostasUsuario[index];
-            const isCorrect = userAnswer === pergunta.resposta;
-            detalheResultadoHTML += `
-            <div class="question-review-item ${isCorrect ? 'review-correct' : 'review-incorrect'}">
-                <p class="review-question-text"><strong>Questão ${index + 1}:</strong> ${pergunta.texto}</p>
-                <p class="review-user-answer">Sua resposta: <span class="${isCorrect ? 'answer-correct' : 'answer-incorrect'}">${userAnswer || "Não respondida"}</span> ${isCorrect ? '✔️' : '❌'}</p>
-                ${!isCorrect ? `<p class="review-correct-answer">Resposta correta: <span class="answer-correct-highlight">${pergunta.resposta}</span></p>` : ''}
-                <p class="review-explanation"><strong>Explicação:</strong> ${pergunta.explicacao}</p>
-            </div>
-            `;
-        });
-
-        resultadoDiv.innerHTML = detalheResultadoHTML;
-        resultadoDiv.classList.add('show'); 
-        reiniciarBtn.classList.add('show'); 
-      }, transitionDelay);
-    }
-
-    function reiniciarQuiz() {
-        if(!questionArea || !resultadoDiv || !reiniciarBtn || !progressBar || !perguntaDiv || !opcoesDiv) return;
-
-        indicePerguntaAtual = 0;
-        acertos = 0;
-        respostasUsuario = new Array(totalPerguntas).fill(null); // Limpa respostas anteriores
-
-        resultadoDiv.classList.remove('show');
-        // Delay para a animação de saída do resultado antes de limpar o conteúdo
-        setTimeout(() => {
-            resultadoDiv.innerHTML = ''; 
-        }, transitionDelay + 100); // Um pouco mais que a transitionDelay para garantir
-
-
-        reiniciarBtn.classList.remove('show');
-
-        questionArea.style.display = 'block'; // Garante que a area de questão está visível
-        questionArea.classList.remove('fade-out', 'fade-in'); // Limpa classes de animação
-        
-        progressBar.style.width = '0%'; 
-        
-        // Pequeno delay para garantir que a UI de resultado sumiu antes de carregar a primeira pergunta
-        setTimeout(() => {
-             opcoesDiv.innerHTML = ''; // Limpa opções antigas
-             perguntaDiv.textContent = ''; // Limpa texto da pergunta antiga
-             carregarPergunta();
-        }, 100); 
-    }
-
-    if (reiniciarBtn) {
-        reiniciarBtn.addEventListener('click', reiniciarQuiz);
-    }
-
-    // Iniciar o quiz
-    if (perguntaDiv && opcoesDiv) { // Garante que os elementos existem antes de iniciar
-        carregarPergunta();
-    }
+    mobileMenu.addEventListener('click', () => {
+      navList.classList.toggle('active');
+      mobileMenu.classList.toggle('active');
+    });
   </script>
 </body>
 </html>
