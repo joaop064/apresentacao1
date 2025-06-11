@@ -284,14 +284,33 @@ if (isset($_SESSION['id'])) {
     <p>Ao errar uma pergunta, o jogo mostrará a resposta correta, com uma explicação clara.</p>
   </section>
 
-  <section class="game">
-    <h2>🖼️ Jogo das Imagens Iguais</h2>
-    <p>As crianças devem encontrar pares de imagens relacionadas à sustentabilidade, como:</p>
+    
+  <section class="game" id="ecocoleta">
+    <h2>♻️ O que é o jogo Eco-Coleta?</h2>
+    <p>No Eco-Coleta, as crianças aprendem sobre a separação do lixo de forma divertida e interativa! O objetivo é arrastar corretamente cada tipo de resíduo para a lixeira correspondente:</p>
     <ul>
-      <li>Duas imagens de árvores.</li>
-      <li>Duas imagens de reciclagem.</li>
+      <li>Plástico na lixeira vermelha</li>
+      <li>Papel na lixeira azul</li>
+      <li>Metal na lixeira amarela</li>
+      <li>Vidro na lixeira verde</li>
+      <li>Orgânico na lixeira marrom</li>
     </ul>
-    <blockquote>"Você sabia que uma árvore adulta pode absorver até 150 kg de CO₂ por ano?"</blockquote>
+    <p>A cada acerto, o jogador ganha pontos e aprende mais sobre os materiais recicláveis!</p>
+  </section>
+
+  <section class="benefits">
+    <h2>🌱 Por que o Eco-Coleta é importante?</h2>
+    <ul>
+      <li>Ensina a importância da coleta seletiva.</li>
+      <li>Promove hábitos sustentáveis desde a infância.</li>
+      <li>Trabalha coordenação motora e raciocínio rápido.</li>
+    </ul>
+    <blockquote>"Separar o lixo corretamente é um pequeno gesto que faz uma grande diferença no planeta!"</blockquote>
+  </section>
+
+  <section class="info" id="sobre">
+    <h2>ℹ️ Sobre o projeto</h2>
+    <p>O Eco-Coleta é um jogo educativo pensado para alunos do Ensino Fundamental. Com ele, as crianças aprendem de forma lúdica a importância de cuidar do planeta e como realizar a separação correta dos resíduos.</p>
   </section>
 
   <section class="benefits">
@@ -319,7 +338,7 @@ if (isset($_SESSION['id'])) {
   <?php if ($comprouJogos): ?>
   <section class="games-links" id="meus-jogos" style="text-align:center;">
     <h2>🎮 Acesse seus jogos!</h2>
-    <a href="quiz.php" class="btn-comprar">Quiz</a>
+    <a href="ecocoleta.php" class="btn-comprar">Eco-coleta</a>
     <a href="memoria.php" class="btn-comprar">Jogo da Memória</a>
   </section>
   <?php endif; ?>
