@@ -29,7 +29,6 @@ if ($result->num_rows !== 1 || !$result->fetch_assoc()['comprou_jogos']) {
   <title>Jogo da Memória Eco - Sustentabilidade</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Variáveis e Reset */
     :root {
       --primary-green: #4CAF50;
       --primary-green-dark: #388E3C;
@@ -84,18 +83,37 @@ if ($result->num_rows !== 1 || !$result->fetch_assoc()['comprou_jogos']) {
       text-align: center; flex-grow: 1; font-size: 2rem; color: var(--primary-green-dark);
     }
 
-    #curiosidade {
-      background-color: var(--light-green-accent);
-      color: var(--primary-green-dark);
-      font-style: italic;
-      font-size: 1.1rem;
-      padding: 12px 18px;
-      border-left: 4px solid var(--primary-green);
-      border-radius: var(--default-border-radius);
-      margin: 15px auto;
-      text-align: center;
-      box-shadow: var(--shadow-soft);
+    #curiosidade-card {
+      display: none;
+      background-color: var(--card-bg);
+      border-left: 6px solid var(--primary-green);
+      padding: 16px;
+      margin: 20px auto;
       max-width: 700px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-medium);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    #curiosidade-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    #curiosidade-card .curiosidade-text {
+      font-size: 1rem;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .game-stats-container {
@@ -159,7 +177,7 @@ if ($result->num_rows !== 1 || !$result->fetch_assoc()['comprou_jogos']) {
     }
 
     .card-back::before {
-      content: ""; /* Remove o emoji */
+      content: "";
     }
 
     .btn-recomecar-memory {
@@ -178,11 +196,6 @@ if ($result->num_rows !== 1 || !$result->fetch_assoc()['comprou_jogos']) {
     .game-feedback-message {
       font-weight: bold; color: var(--primary-green-dark); margin-top: 10px;
     }
-
-    @media (max-width: 480px) {
-      .memory-card { height: 70px; }
-      .card-face { font-size: 1.5rem; }
-    }
   </style>
 </head>
 <body>
@@ -199,7 +212,7 @@ if ($result->num_rows !== 1 || !$result->fetch_assoc()['comprou_jogos']) {
     <div style="width:40px;"></div>
   </div>
 
-  <p id="curiosidade"></p>
+  <div id="curiosidade-card"></div>
 
   <div class="game-stats-container">
     <div class="game-stat">Tentativas: <span id="tentativas-count">0</span></div>
@@ -222,18 +235,42 @@ const paresCountEl = document.getElementById('pares-count');
 const totalParesEl = document.getElementById('total-pares');
 const restartBtn = document.getElementById('restartMemoryGameBtn');
 const feedbackMessageEl = document.getElementById('game-feedback-message');
-const curiosidadeEl = document.getElementById('curiosidade');
+const curiosidadeEl = document.getElementById('curiosidade-card');
 
-const cardValues = ['♻️', '🌳', '💧', '☀️', '💨', '🚲', '🥕', '🌍'];
+const cardValues = ['\u267b\ufe0f', '\ud83c\udf33', '\ud83d\udca7', '\u2600\ufe0f', '\ud83d\udca8', '\ud83d\udeb2', '\ud83e\udd55', '\ud83c\udf0d'];
 const curiosidades = {
-  '♻️': 'A reciclagem ajuda a preservar recursos naturais e economizar energia.',
-  '🌳': 'As árvores produzem oxigênio e ajudam a combater as mudanças climáticas.',
-  '💧': 'Água é essencial para a vida e deve ser usada de forma consciente.',
-  '☀️': 'A energia solar é limpa e renovável.',
-  '💨': 'O vento é uma fonte de energia renovável.',
-  '🚲': 'Andar de bicicleta reduz a poluição e melhora a saúde.',
-  '🥕': 'Alimentos orgânicos são melhores para o solo e a saúde.',
-  '🌍': 'Preservar o planeta é essencial para o futuro.'
+  '\u267b\ufe0f': {
+    texto: 'A reciclagem ajuda a preservar recursos naturais e economizar energia.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/679/679922.png'
+  },
+  '\ud83c\udf33': {
+    texto: 'As árvores produzem oxigênio e ajudam a combater as mudanças climáticas.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/427/427735.png'
+  },
+  '\ud83d\udca7': {
+    texto: 'Água é essencial para a vida e deve ser usada de forma consciente.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/728/728093.png'
+  },
+  '\u2600\ufe0f': {
+    texto: 'A energia solar é limpa e renovável.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/869/869869.png'
+  },
+  '\ud83d\udca8': {
+    texto: 'O vento é uma fonte de energia renovável.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/1121/1121359.png'
+  },
+  '\ud83d\udeb2': {
+    texto: 'Andar de bicicleta reduz a poluição e melhora a saúde.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/44/44651.png'
+  },
+  '\ud83e\udd55': {
+    texto: 'Alimentos orgânicos são melhores para o solo e a saúde.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/415/415744.png'
+  },
+  '\ud83c\udf0d': {
+    texto: 'Preservar o planeta é essencial para o futuro.',
+    imagem: 'https://cdn-icons-png.flaticon.com/512/616/616408.png'
+  }
 };
 
 let flippedCards = [];
@@ -254,7 +291,8 @@ function shuffle(array) {
 function createBoard() {
   gameBoard.innerHTML = '';
   feedbackMessageEl.textContent = '';
-  curiosidadeEl.textContent = '';
+  curiosidadeEl.innerHTML = '';
+  curiosidadeEl.style.display = 'none';
   flippedCards = [];
   matchedPairs = 0;
   attempts = 0;
@@ -310,7 +348,16 @@ function checkForMatch() {
 
     matchedPairs++;
     paresCountEl.textContent = matchedPairs;
-    curiosidadeEl.textContent = curiosidades[card1.dataset.value] || '';
+
+    const curiosidade = curiosidades[card1.dataset.value];
+    if (curiosidade) {
+      curiosidadeEl.innerHTML = `
+        <img src="${curiosidade.imagem}" alt="Imagem da curiosidade">
+        <div class="curiosidade-text">${curiosidade.texto}</div>
+      `;
+      curiosidadeEl.style.display = 'flex';
+    }
+
     flippedCards = [];
     lockBoard = false;
   } else {
