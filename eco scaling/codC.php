@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['matricula'] = $matricula; // opcional, se quiser salvar na sessão
 
     
-    header("Location: inicio.php");
+    header("Location: index.php");
     exit();
 }
 ?>
