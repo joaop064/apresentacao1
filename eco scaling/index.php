@@ -322,7 +322,7 @@
 
 <!-- MENU -->
 <nav>
-  <a class="logo" href="inicio.php">EcoScaling</a>
+  <a class="logo" href="index.php">EcoScaling</a>
   <div class="nav-menu-right">
     <ul class="nav-list">
       <li><a href="ecogame.php">Ecogame</a></li>
