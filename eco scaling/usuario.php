@@ -3,7 +3,7 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['retornar']) && $_POST['retornar'] === 'retornar') {
-        header("Location: inicio.php");
+        header("Location: index.php");
         exit;
     }
 }
@@ -38,7 +38,7 @@ if ($result->num_rows == 1) {
 }   else {
     session_unset(); 
     session_destroy(); 
-    header("Location: inicio.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -168,7 +168,7 @@ if ($result->num_rows == 1) {
 
   <div class="button-group">
     <a href="logout.php" class="edit-button" onclick="return confirm('Deseja realmente sair da conta?')">Sair</a>
-    <a href="inicio.php" class="edit-button">Voltar</a>
+    <a href="index.php" class="edit-button">Voltar</a>
   </div>
 </div>
 
