@@ -337,7 +337,6 @@
             const returnToMainFromPauseBtn = document.getElementById('return-to-main-from-pause-btn');
             const restartGameBtn = document.getElementById('restart-game-btn');
 
-            // NEW BUTTONS
             const returnToGameStartBtn = document.getElementById('return-to-game-start-btn');
             const returnToSiteHomepageFromPauseBtn = document.getElementById('return-to-site-homepage-from-pause-btn');
             const returnToSiteHomepageFromEndBtn = document.getElementById('return-to-site-homepage-from-end-btn');
@@ -445,30 +444,43 @@
              * Volta para a página inicial do site (reinicia o estado do jogo e vai para inicio.php).
              */
             function returnToSiteHomepage() {
-                // First, ensure the game is stopped and cleaned up
+                // Primeiro, garante que o jogo está parado e limpo
                 gameActive = false;
                 gamePaused = false;
                 clearInterval(gameInterval);
                 clearInterval(itemGenerationInterval);
-                gameArea.innerHTML = ''; // Clear any remaining items
+                gameArea.innerHTML = ''; // Limpa quaisquer itens restantes
 
-                // Then, redirect to the site homepage
-                window.location.href = 'inicio.php';
+                // Então, redireciona para a página inicial do site
+                window.location.href = 'index.php'; // Altere para a URL real da sua página inicial se for diferente
             }
 
             /**
              * Volta para a tela de início do jogo (mantém dentro do contêiner do jogo).
              */
             function returnToGameStartScreen() {
-                // First, ensure the game is stopped and cleaned up
+                // Primeiro, garante que o jogo está parado e limpo
                 gameActive = false;
                 gamePaused = false;
                 clearInterval(gameInterval);
                 clearInterval(itemGenerationInterval);
-                gameArea.innerHTML = ''; // Clear any remaining items
+                gameArea.innerHTML = ''; // Limpa quaisquer itens restantes
 
-                // Then, show the game start screen
+                // Então, mostra a tela de início do jogo
                 showGameScreen(gameStartScreen);
+            }
+
+            /**
+             * Volta para o menu principal da página inicial (o container fora do jogo).
+             */
+            function returnToMainMenu() {
+                gameActive = false;
+                gamePaused = false;
+                clearInterval(gameInterval);
+                clearInterval(itemGenerationInterval);
+                gameArea.innerHTML = ''; // Limpa a área de jogo
+
+                showMainContainer(mainPage); // Mostra a página principal
             }
 
             /**
@@ -494,7 +506,7 @@
                 const item = document.createElement('div');
                 item.classList.add('item');
 
-                const isCollectible = Math.random() > 0.3;
+                const isCollectible = Math.random() > 0.3; // 70% de chance de ser coletável
                 let itemEmoji;
 
                 if (isCollectible) {
@@ -559,23 +571,23 @@
             // Define que a página principal seja a primeira a aparecer
             showMainContainer(mainPage);
 
-            // Listener for "Começar a Jogar" button from main page
+            // Listener para o botão "Começar a Jogar" da página principal
             startGameFromMainBtn.addEventListener('click', () => {
-                showMainContainer(gameContainerWrapper); // Switch to game container
-                showGameScreen(gameStartScreen); // Show the game start screen
+                showMainContainer(gameContainerWrapper); // Alterna para o container do jogo
+                showGameScreen(gameStartScreen); // Mostra a tela de início do jogo
             });
 
-            // Listeners for game buttons
+            // Listeners para os botões do jogo
             startGameBtn.addEventListener('click', startGame);
             pauseGameBtn.addEventListener('click', pauseGame);
             resumeGameBtn.addEventListener('click', resumeGame);
             restartGameBtn.addEventListener('click', startGame);
 
-            // NEW LISTENERS
-            returnToMainFromPauseBtn.addEventListener('click', returnToMainMenu); // Existing "Voltar ao Início" for main page
-            returnToGameStartBtn.addEventListener('click', returnToGameStartScreen); // New: Return to game start screen
-            returnToSiteHomepageFromPauseBtn.addEventListener('click', returnToSiteHomepage); // New: Go to site homepage from pause
-            returnToSiteHomepageFromEndBtn.addEventListener('click', returnToSiteHomepage);   // New: Go to site homepage from end game
+            // Novos Listeners para os botões de navegação adicionados
+            returnToMainFromPauseBtn.addEventListener('click', returnToMainMenu);
+            returnToGameStartBtn.addEventListener('click', returnToGameStartScreen);
+            returnToSiteHomepageFromPauseBtn.addEventListener('click', returnToSiteHomepage);
+            returnToSiteHomepageFromEndBtn.addEventListener('click', returnToSiteHomepage);
         });
     </script>
 </body>
