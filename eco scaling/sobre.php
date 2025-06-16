@@ -198,7 +198,7 @@
   <a class="logo">EcoScaling</a>
   <div class="nav-menu-right">
     <ul class="nav-list">
-      <li><a href="inicio.php">Início</a></li>
+      <li><a href="index.php">Início</a></li>
       <li><a href="ecogame.php">Ecogame</a></li>
       <li><a href="cards.php">Cards</a></li>
       <li><a href="#contato">Contato</a></li>
