@@ -26,7 +26,7 @@ if (isset($_POST['email']) && isset($_POST['senha'])) {
             if (password_verify($senha, $aluno['senha'])) {
                 $_SESSION['id'] = $aluno['id'];
                 $_SESSION['nome'] = $aluno['nome'];
-                header("Location: inicio.php");
+                header("Location: index.php");
                 exit;
             } else {
                 $mensagem = "Senha incorreta";
